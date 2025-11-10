@@ -1,0 +1,115 @@
+name: Deploy to Development
+
+# Trigger khi push vào nhánh develop
+on:
+    push:
+        branches:
+            - develop
+
+    # Cho phép chạy workflow thủ công từ Actions tab
+    workflow_dispatch:
+
+env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}/ai-trading-demo-dev
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        environment: development
+
+        permissions:
+            contents: read
+            packages: write
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to Container Registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Extract metadata for Docker
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                  tags: |
+                      type=ref,event=branch
+                      type=sha,prefix={{branch}}-
+                      type=raw,value=latest-dev
+
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  file: ./Dockerfile.dev
+                  push: true
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  build-args: |
+                      NEXT_PUBLIC_API_URL_DEV=${{ secrets.NEXT_PUBLIC_API_URL_DEV }}
+                      DATABASE_URL_DEV=${{ secrets.DATABASE_URL_DEV }}
+                      API_SECRET_KEY_DEV=${{ secrets.API_SECRET_KEY_DEV }}
+                      JWT_SECRET_DEV=${{ secrets.JWT_SECRET_DEV }}
+                  cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+                  cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+
+            - name: Deploy to Development Server
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ secrets.DEV_SERVER_HOST }}
+                  username: ${{ secrets.DEV_SERVER_USERNAME }}
+                  key: ${{ secrets.DEV_SERVER_SSH_KEY }}
+                  port: ${{ secrets.DEV_SERVER_PORT || 22 }}
+                  script: |
+                      # Login to container registry
+                      echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+
+                      # Pull image mới nhất
+                      docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-dev
+
+                      # Stop và remove container cũ (nếu có)
+                      docker stop ai-trading-dev || true
+                      docker rm ai-trading-dev || true
+
+                      # Run container mới
+                      docker run -d \
+                        --name ai-trading-dev \
+                        --restart unless-stopped \
+                        -p 3000:3000 \
+                        -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL_DEV }} \
+                        -e DATABASE_URL=${{ secrets.DATABASE_URL_DEV }} \
+                        -e API_SECRET_KEY=${{ secrets.API_SECRET_KEY_DEV }} \
+                        -e JWT_SECRET=${{ secrets.JWT_SECRET_DEV }} \
+                        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-dev
+
+                      # Clean up unused images
+                      docker image prune -af --filter "until=24h"
+
+            - name: Verify Deployment
+              run: |
+                  echo "✅ Deployment completed successfully!"
+                  echo "🐳 Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-dev"
+                  echo "🌐 Check your development server at: ${{ secrets.DEV_SERVER_URL_DEV }}"
+
+            - name: Send Slack notification
+              if: always()
+              uses: 8398a7/action-slack@v3
+              with:
+                  status: ${{ job.status }}
+                  text: |
+                      Development Deployment ${{ job.status }}
+                      Branch: ${{ github.ref_name }}
+                      Commit: ${{ github.sha }}
+                      Author: ${{ github.actor }}
+                  webhook_url: ${{ secrets.SLACK_WEBHOOK_DEV }}
+              env:
+                  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV }}

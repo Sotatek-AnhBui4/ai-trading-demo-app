@@ -229,3 +229,148 @@ export interface TradeHistoryFilters {
   status?: OrderStatus;
 }
 
+// AI Recommendation Types
+export type RecommendationAction = "REBALANCE" | "HOLD" | "BUY" | "SELL" | "EXIT_TO_STABLE";
+
+export interface RecommendationChange {
+  asset: string;
+  from: number; // percentage
+  to: number; // percentage
+}
+
+export interface AIRecommendation {
+  id: string;
+  action: RecommendationAction;
+  changes: RecommendationChange[];
+  reasoning: string[];
+  confidence: number; // 0-1
+  riskScore: number; // 0-10
+  marketRegime: "bull" | "bear" | "chop";
+  assetSignals: {
+    asset: string;
+    signal: "bullish" | "bearish" | "neutral";
+  }[];
+  timestamp: string;
+  status: "pending" | "approved" | "rejected" | "executed";
+}
+
+// Rules Engine Validation Types
+export interface RuleCheck {
+  id: string;
+  name: string;
+  description: string;
+  passed: boolean;
+  message?: string;
+  severity: "critical" | "warning" | "info";
+}
+
+export interface RulesValidationResult {
+  id: string;
+  recommendationId: string;
+  allPassed: boolean;
+  checks: RuleCheck[];
+  timestamp: string;
+  approved: boolean;
+}
+
+// Execution Mode Settings Types
+export type ExecutionMode = "manual" | "auto";
+
+export interface ExecutionSettings {
+  mode: ExecutionMode;
+  autoExecuteRebalancing: boolean;
+  rebalancingFrequency: "daily" | "weekly" | "biweekly" | "monthly";
+  autoStopLoss: boolean;
+  stopLossType: "trailing" | "fixed";
+  stopLossPercentage: number;
+  autoTakeProfit: boolean;
+  takeProfitWhenGoalReached: boolean;
+  requireApprovalThreshold: number; // USD amount
+  notificationsEnabled: boolean;
+}
+
+// Execution Monitor Types
+export type OrderExecutionStatus = "pending" | "routing" | "executing" | "completed" | "failed" | "cancelled";
+
+export interface ExecutionOrder {
+  id: string;
+  parentRecommendationId: string;
+  asset: string;
+  side: OrderSide;
+  totalAmount: number;
+  amountFilled: number;
+  averagePrice: number;
+  status: OrderExecutionStatus;
+  strategy: "TWAP" | "VWAP" | "Smart";
+  totalChunks: number;
+  completedChunks: number;
+  startTime: string;
+  endTime?: string;
+  estimatedCompletion?: string;
+}
+
+export interface ExchangeRoute {
+  exchangeName: string;
+  percentage: number;
+  amount: number;
+  status: "pending" | "active" | "completed" | "failed";
+}
+
+export interface ExecutionMonitor {
+  id: string;
+  recommendationId: string;
+  orders: ExecutionOrder[];
+  exchangeRoutes: ExchangeRoute[];
+  totalSlippage: number; // percentage
+  maxSlippage: number; // percentage
+  avgExecutionPrice: number;
+  expectedPrice: number;
+  startTime: string;
+  estimatedEndTime: string;
+  status: OrderExecutionStatus;
+}
+
+// Post-Trade Monitoring Types
+export type AlertSeverity = "info" | "warning" | "critical";
+
+export interface TradingAlert {
+  id: string;
+  type: "drawdown" | "slippage" | "circuit_breaker" | "goal_milestone" | "risk_limit";
+  severity: AlertSeverity;
+  message: string;
+  details: Record<string, unknown>;
+  timestamp: string;
+  acknowledged: boolean;
+}
+
+export interface CircuitBreakerStatus {
+  enabled: boolean;
+  triggered: boolean;
+  threshold: number; // percentage
+  currentDrawdown: number; // percentage
+  lastChecked: string;
+  actionTaken?: string;
+}
+
+export interface RealTimeTracking {
+  currentPrice: Record<string, number>; // asset -> price
+  currentPnL: number;
+  currentPnLPct: number;
+  currentDrawdown: number;
+  maxDrawdown: number;
+  lastUpdated: string;
+}
+
+export interface DailyReport {
+  date: string;
+  openingBalance: number;
+  closingBalance: number;
+  pnl: number;
+  pnlPct: number;
+  tradesExecuted: number;
+  winRate: number;
+  maxDrawdown: number;
+  sharpeRatio?: number;
+  notes: string[];
+}
+

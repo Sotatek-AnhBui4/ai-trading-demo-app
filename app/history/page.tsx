@@ -203,7 +203,7 @@ export default function HistoryPage() {
                       value={filters.status || "all"}
                       onValueChange={(value) =>
                         setFilters({
-                          status: value === "all" ? undefined : (value as any),
+                          status: value === "all" ? undefined : (value as Order["status"]),
                         })
                       }
                     >
@@ -343,7 +343,7 @@ export default function HistoryPage() {
                       value={filters.side || "all"}
                       onValueChange={(value) =>
                         setFilters({
-                          side: value === "all" ? undefined : (value as any),
+                          side: value === "all" ? undefined : (value as "buy" | "sell"),
                         })
                       }
                     >

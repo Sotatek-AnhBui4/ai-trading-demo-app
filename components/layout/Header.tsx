@@ -10,26 +10,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { Badge } from "@/components/ui/badge";
-import { useEffect, useState } from "react";
+import { useThemeWithCookies } from "@/hooks/useThemeWithCookies";
+import { useLayoutEffect, useState } from "react";
 
 export function Header() {
   const { user } = useUserStore();
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const { theme, setTheme } = useThemeWithCookies();
+  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    // Initialize theme from localStorage or default to dark
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-    const initialTheme = savedTheme || "dark";
-    setTheme(initialTheme);
-    document.documentElement.classList.toggle("dark", initialTheme === "dark");
+  // Avoid hydration mismatch - using useLayoutEffect to set mounted state
+  useLayoutEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
   }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-  };
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-card px-6">
@@ -45,14 +38,35 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Theme Toggle */}
-        <Button variant="ghost" size="icon" onClick={toggleTheme}>
-          {theme === "light" ? (
-            <Moon className="h-5 w-5" />
-          ) : (
-            <Sun className="h-5 w-5" />
-          )}
-        </Button>
+        {/* Theme Toggle with Dropdown */}
+        {mounted && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                {theme === "light" ? (
+                  <Sun className="h-5 w-5" />
+                ) : (
+                  <Moon className="h-5 w-5" />
+                )}
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                <Sun className="mr-2 h-4 w-4" />
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                <Moon className="mr-2 h-4 w-4" />
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                <span className="mr-2 h-4 w-4">💻</span>
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
 
         {/* Notifications */}
         <DropdownMenu>

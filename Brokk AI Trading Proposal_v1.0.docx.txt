@@ -1,0 +1,600 @@
+﻿SotaTek Technology Joint Stock Company
+219 Trung Kinh, Ha Noi
+ horizontal line 
+
+
+
+AI Trading Proposal 21st October 2025
+I. GENERAL INTRODUCTION
+The cryptocurrency trading market requires sophisticated tools that combine real-time data analysis, AI-driven insights, and robust risk management. This PoC aims to validate the core concepts of an AI-powered trading system that:
+* Converts market data and sentiment into actionable trading signals
+* Creates goal-based trading plans (e.g., "+5% return in 60 days")
+* Enforces risk management through automated guardrails
+* Provides full transparency and explainability for every decision
+II. PROPOSAL DESCRIPTION
+The system is divided into three distinct phases. The first phase includes the PoC(Proof of Concept) version which has  core features with well-defined development requirements. These features represent the fundamental functionality of the system, which has been clearly outlined. The second phase encompasses advanced future-oriented features, which are designed to add enhanced capabilities as the system evolves. Finally, the third phase focuses on mobile application and advanced optimization to improve the quality of system
+
+
+Phase 1 (PoC):
+* 2 assets: BTC, ETH, 2 market pairs: BTC/USDT, ETH/USDT
+* Simplified goal-based optimization
+* Paper trading only (no real money, on staging server)
+* Basic AI Agent for trading
+* Basic explainability (SHAP/feature importance)
+* Web dashboard for signal viewing and goal creation
+Phase 2:
+* Real money trading(on TCX production server)
+* Advanced for risk control
+* Advanced for AI Agent(More social media sentiments)
+* Advanced for Execution
+* Post-trade surveillance
+Phase 3:
+* More assets, more exchanges
+* Mobile application
+* Advanced optimization (More than 100 simulations: depends on supported number of token and number of market pair)
+* Advanced warning and tracking
+
+
+PHASE 1 (PoC)
+Prerequisite
+* Only for spot trading
+* No promise of returns
+* Only one centralized exchange (assumption: TCX staging server)
+* No real money, only paper trading only, on staging server(not production server)
+* No admin control, user can config the rule-based by themself
+
+
+Note: Chúng tôi gợi ý ra những tính năng cho bản PoC như này bởi vì 
++ Trước khi chạy thật với tiền thật, cần ưu tiên kiểm chứng tính đúng đắn và độ khả thi ở môi trường staging
++ Các tính năng này chúng tôi đánh giá là cơ bản cho một flow khi ứng dụng công cụ AI trading vào giao dịch
++ Các giới hạn về số lượng token, market pair để đơn giản hóa các tính năng, sớm hoàn thiện hơn để đưa vào sử dụng thử
++ Thay vì chạy thử với các sàn giao dịch bên ngoài, thì chúng tôi recommend cho việc sử dụng TCX staging server để làm sàn dùng thử, dễ control và monitor công cụ AI trading hơn
+1. Authentication
+* Login/Signup/Logout user: Common as usual
+2. User profile
+* After signup successfully, showing the user information
+3. AI trading rules-based configuration
+* Risk Control: 
+   * Position limit: maximum 20% capital in 1 coin (per-asset cap), maximum 40% capital in 1 sector (sector cap allowed)
+   * Risk Limit: Maximum VaR(Value at Risk): 2%/day
+   * Creating multiple risk control levels
+* AI Agent (Running in background):
+   * Create AI Agent for threshold analysis, price increase probability and reliability calculation (assumption: AI Agent will be created by Claude/GPT API service)
+   * AI threshold analysis: AI will analyze and indicate the feasible threshold (E.g.: 60%)
+   * Calculate the probability of price increase: condition > threshold
+   * Calculate the reliability: condition > threshold
+   * Source: sentiment surge (Fear, greed: alternative.me, NO social media), whale inflows (designated hard-coded wallet IDs -> crawler from those wallets), market data (on-chain data, volume)
+   * Only apply for STRONG BUY
+   * Dashboard for signal viewing and the AI analysis
+* Create goal plan: 
+   * Input must-have:
+      * Initial capital (E.g. $10,000)
+      * Profit target (E.g. +5%)
+      * Time (E.g. 60 days)
+      * Risk level (Conservative/Moderate/Aggressive)
+      * Constraints (Risk Control) 
+4. Exchange Integration & Execution
+* Exchange integration: on TCX staging server, integrate with private/public APIs
+   * Exchange linking: authentication, token for private API
+   * Show balance information
+   * Market pair integration: Limit market pairs based on these 2 tokens BTC, ETH and 2 market pairs BTC/USDT, ETH/USDT
+* Execution:
+   * Pre-executing:
+      * Check user profile information before trading
+      * Check KYC/AML before placing an order
+   * In-executing: TWAP (Time-Weighted Average Price) - divided equally over 60 minutes
+      * Conditions:
+         * Allow partial filling
+         * Timeout 5 minutes per order
+         * Split large orders to reduce price impact
+   * Post-executing:
+      * Clearly explain why the purchase (Basic explainability)
+5. Tracking
+* History:
+   * Balance history
+   * Order history
+   * Trade history
+* Tracker: on-track or behind of target
+
+
+PHASE 2
+Prerequisite
+* Only for spot trading
+* No promise of returns
+* Only one centralized exchange (assumption: TCX production server)
+* Real money trading
+1. System Logging
+* Snapshot of data at the time of decision
+* Output of AI Agent decision
+* Decision reason
+* Order details (price, volume, time)
+* Fills result (how much filled, how much price)
+* Post-trade PnL
+* Send notification to user
+2. Advanced for Risk Control
+* Position Limits:
+   * Blacklist
+   * Whitelist
+* Risk Limits:
+   * Maximum drawdown: 3%
+   * Maximum slippage: 0.25%/order
+* Leverage and perpetual future (Out of scope)
+   * On/Off leverage
+   * One/Off futures/perpetuals
+* Pause around the event:
+   * Pause 10-15 minutes before/after CPI announcement
+   * Pause 30 minutes before/after Fed meeting (FOMC)
+* Circuit breaker:
+   * Automatically sell out stablecoin (USDC) when:
+      * Drawdown reach 3%
+   * Notify emergency for users
+3. Advanced AI Agent
+* More social media sentiments(Twitter, Reddit)
+* AI Agent apply for STRONG SELL
+4. Advanced Execution
+* VWAP (Volume-Weighted) - theo khối lượng
+* Smart routing - chọn sàn có giá tốt nhất
+5. Post-trade surveillance
+* Continuous monitoring after the transaction:
+   * Abnormal PnL: => Warning
+   * Wash trading (self-buying and self-selling) => flag
+   * Too much focus on 1 coin => warning
+   * Actual and expected slippage => evaluate execution quality
+
+
+PHASE 3
+1. More assets, more exchanges
+2. Mobile application
+3. Advanced optimization 
+* More than supported number of tokens
+* More than supported number of trading pair
+4. Advanced warning
+* No Guaranteed Profits
+* Results are Probable, Not Certain
+* May Lose Money
+* Not Financial Advice
+5. Advanced tracking:
+* If behind then suggest adjustment
+* If adjustment INCREASES RISK -> must be approved by user
+6. Admin Control
+III. Project Configuration
+
+
+No
+	Category
+	Technology
+	Version
+	Note
+	1
+	Database
+	PostgreSQL
+	16.2 or later
+	
+
+	2
+	Front End Framework
+	ReactJS, NextJS
+	Latest
+	
+
+	3
+	Back End Framework
+	Java, Nodejs
+	Latest
+	
+
+	4
+	Mobile Framework
+	React Native
+	0.7.4 or later
+	
+
+	5
+	AI Agent
+	Python
+	Latest
+	
+
+	6
+	Cloud Provider
+	AWS
+	
+
+	
+
+	7
+	Message Queue
+	Kafka
+	
+
+	
+
+	8
+	Cache
+	Redis
+	
+
+	
+
+	9
+	Server
+	Linux
+	
+
+	
+
+	10
+	Version Control
+	Git
+	
+
+	Github
+	11
+	CI/CD
+	Github Runner
+	
+
+	
+
+	12
+	Project Management Tool
+	JIRA
+	
+
+	
+
+	13
+	Project Management Methodology
+	Agile-Scrum
+	
+
+	
+
+	
+
+
+
+IV. DELIVERABLES
+No
+	Category
+	Deliverable
+	1
+	Project Management
+	Project Plan, Progress Report, Meeting Minutes
+	2
+	Risk Management
+	Risk Tracker, Issue Tracker
+	3
+	Requirement Management
+	SRS or FDD, Change Request Log
+	4
+	Testing and validation
+	Test Case, Test Report
+	5
+	Development Artifacts
+	Source Code, Integration Guide
+	
+
+V. DEPENDENCIES AND CONSTRAINTS
+No
+	Category
+	Content
+	1
+	Scope
+	The scope is based on the mentioned features.
+Any changes added counts as a change request, out of scope, and to be reviewed and approved by the approval board (Client <->Sotatek)
+	2
+	Account
+	All development accounts will be provided by the client before the 1st development sprint/ kickoff day from 3-5 working days
+	3
+	Scope
+	The scope of supporting more networks to users is to allow deposit/withdraw/spot trade network native token/usdt
+	4
+	Testing scope
+	IPhone 12 Promax, Samsung Galaxy Note 20, Responsive specs is kept the same as the Monas previously built
+	5
+	Third party
+	Client will pay the cost of infrastructure (AWS) or any cost of a third-party software
+	6
+	Q&A
+	All Q&A must be answered within 2 working days. If after 1 more day you still do not respond, we will warn you that the progress may be delayed. If after 1 more day you still do not respond, we will follow our assumption.
+	7
+	Review
+	All milestone deliverables must be reviewed and have feedbacks within 1 working week
+	
+
+VI. ACCEPTANCE CRITERIA
+No
+	Category
+	Content
+	1
+	System Availability
+	The system must achieve an uptime of 99% over a calendar month (based on AWS availability)
+	2
+	System Resiliency
+	The system must implement an N+1 resilience strategy, ensuring there is at least one additional operational instance more than the necessary amount to handle the current workload.
+This includes automatic failover and redundancy across multiple cloud availability zones to guarantee continuous operation without user intervention.
+(based on AWS resiliency)
+	3
+	Disaster Recovery
+	The recovery time objective (RTO) must not exceed 4 hours.
+The recovery point objective (RPO) must not exceed 2 hours.
+Daily backups of all data must be performed automatically and must be stored in at least two separate physical locations, one of which must be off-site every 24 hours.
+(based on AWS recovery)
+	
+
+VII. WORK MODEL, COST, AND SCHEDULE
+1. Work Model 
+* The team will work on a T&M contract and use either the Agile/Scrum or Waterfall methodology for development. We recommend using the Agile approach, where the timeline is divided into sprints, each lasting ~2 weeks.
+* The team will receive requirements from the customer and handle tasks according to the capabilities of the team members.
+* When a task exceeds the team's capabilities (non-technical issues), we will discuss adding or changing team members.
+2. Cost and Team Structure
+We provide an option to do features separately:
+
+
+
+
+	Category
+	Function
+	Clear requirement(*)
+	Not clear requirement
+(*)
+	Effort
+(MM)
+	Price
+($)
+	Duration
+(week)
+	
+
+Phase 1
+	Discovery /Planning
+	Wireframe
+	
+
+	
+
+	0.75
+	2400
+	2
+	FDD
+	
+
+	
+
+	1.25
+	4000
+	Authentication
+	
+
+	x
+	
+
+	0.5
+	1600
+	1
+	User Profile
+	
+
+	x
+	
+
+	0.5
+	1600
+	1
+	AI trading rules-based configuration
+	Risk Control
+	x
+	
+
+	1.5
+	4800
+	2
+	AI Agent
+	x
+	
+
+	4
+	12800
+	4
+	Creating goal plan
+	x
+	
+
+	1
+	3200
+	1
+	Exchange integration and execution
+	Exchange integration
+	x
+	
+
+	2
+	6400
+	2
+	Execution
+	x
+	
+
+	2
+	6400
+	2
+	Tracking
+	History
+	x
+	
+
+	1.25
+	4000
+	1
+	Tracker
+	x
+	
+
+	1
+	3200
+	1
+	Total Phase 1
+	15.75
+	50,400
+	
+
+	Phase 2
+	System Logging
+	
+
+	
+
+	x
+	Check assumed requirements as described above to make sure both parties are on the same page. We recommend we should go with planning phase to wrap up detailed output for development phase
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	Advanced for Risk Control
+	
+
+	
+
+	x
+	Advanced AI Agent
+	
+
+	
+
+	x
+	Advanced Execution
+	
+
+	
+
+	x
+	Post-trade surveillance 
+	
+
+	
+
+	x
+	Phase 3
+	More assets
+	
+
+	
+
+	x
+	Mobile Application
+	
+
+	
+
+	x
+	Advanced optimization
+	
+
+	
+
+	x
+	Advanced warning
+	
+
+	
+
+	x
+	Advanced tracking
+	
+
+	
+
+	x
+	
+
+* Clear requirement: The requirement is clear. Can start development.
+* Not clear requirement: Should go with planning phase to prepare enough information before start development
+3. Master Schedule (Phase 1)
+The project will take 3 months(2.5 months development, 2 weeks UAT) to implement functions and bug-fixing
+Project Milestones for Phase 1:
+Milestones
+	Duration
+	Note
+	Sprint 1
+	2 weeks
+	Detailed requirements gathering
+Wireframe and UI/UX design
+Development of base source code, both frontend and backend
+	Sprint 2-3
+	4 weeks
+	+ Authentication
++ User Profile
++ AI trading rule-based configuration
+	Sprint 4
+	2 weeks
+	+ AI trading rule-based configuration
++ Exchange integration & execution
+	Sprint 5
+	2 weeks
+	+ Tracking
+	Sprint 6
+	2 weeks
+	Deployment + UAT
+Fix UAT bugs
+	
+
+VIII. MAINTENANCE
+After the development and deployment phase, additional support (if required) should be provided based on the following table
+
+
+Position
+	Level
+	Unit price
+	2024
+	Total
+(M/M)
+	Total
+Price
+	Monthly
+	Devops
+	Middle
+	3500
+	0.25
+	0.25
+	875
+	BE Dev
+	Middle
+	3000
+	1
+	1
+	3000
+	FE Dev
+	Middle
+	3000
+	1
+	1
+	3000
+	QC
+	Middle
+	2600
+	0.5
+	0.5
+	1300
+	Total
+	8,175

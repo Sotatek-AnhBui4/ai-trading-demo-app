@@ -1,0 +1,180 @@
+﻿📋 TÓM TẮT CÁC LUẬT TRONG TÀI LIỆU BROKK
+1️⃣ LUẬT AN TOÀN & TUÂN THỦ (Guardrails & Compliance)
+Luật cơ bản:
+* ❌ Không được hứa lợi nhuận chắc chắn → chỉ nói xác suất (VD: "62% khả năng đạt +5%")
+* ✅ Phải kiểm tra hồ sơ phù hợp trước khi cho user trade
+* ✅ Phải kiểm tra KYC/AML trước mỗi lệnh
+* ✅ Phải ghi log mọi quyết định (không thể xóa được)
+* ✅ Phải giải thích rõ ràng tại sao mua/bán
+* ✅ Phải cảnh báo rủi ro nổi bật
+________________
+
+
+2️⃣ LUẬT KIỂM SOÁT RỦI RO (Risk Controls)
+Giới hạn vị thế:
+* 📊 Tối đa 20% vốn vào 1 coin (per-asset cap)
+* 📊 Tối đa 40% vốn vào 1 lĩnh vực (sector cap)
+* 🚫 Danh sách cấm (blacklist) - không được trade những coin này
+* ✅ Danh sách cho phép (whitelist) - chỉ trade những coin này
+Giới hạn rủi ro:
+* 📉 Tối đa VaR 2%/ngày (Value at Risk - tiền có thể mất trong 1 ngày)
+* 📉 Tối đa drawdown 3% (sụt giảm tối đa từ đỉnh)
+* 💸 Tối đa slippage 0.25%/lệnh (chênh lệch giá khi mua/bán)
+Đòn bẩy & phái sinh:
+* ⚙️ Bật/tắt đòn bẩy (leverage) theo user
+* ⚙️ Bật/tắt futures/perpetuals theo user
+* 🛡️ Chỉ giao dịch spot (mặc định an toàn)
+Tạm dừng quanh sự kiện:
+* ⏸️ Dừng 10 phút trước/sau công bố CPI
+* ⏸️ Dừng 30 phút trước/sau họp Fed (FOMC)
+Nút khẩn cấp (Circuit Breaker):
+* 🔴 Tự động bán hết ra stablecoin khi:
+   * Drawdown chạm 3%
+   * Market chuyển sang "bear-high-vol"
+* 🔔 Thông báo ngay cho user
+________________
+
+
+3️⃣ LUẬT CHO TÍN HIỆU MUA/BÁN (Signal Rules)
+Điều kiện cho "Strong Buy":
+* ✅ Xác suất tăng giá > 62%
+* ✅ Dự kiến tăng > ngưỡng (tùy khung thời gian)
+* ✅ Độ tin cậy > 60%
+* ✅ Vượt qua tất cả bộ lọc rủi ro
+Điều kiện cho "Strong Sell":
+* ✅ Xác suất giảm giá > 62%
+* ✅ Dự kiến giảm > ngưỡng
+* ✅ Độ tin cậy > 60%
+Bắt buộc kèm theo:
+* 📝 Top 3 lý do (VD: "Sentiment tích cực", "Whale đang mua", "Funding bình thường hóa")
+* ⚠️ Cảnh báo rủi ro (VD: "Có unlock token sau 2 ngày")
+* 🔗 Link nguồn dữ liệu
+________________
+
+
+4️⃣ LUẬT LẬP KẾ HOẠCH MỤC TIÊU (Goal Planning Rules)
+Input bắt buộc:
+* 💰 Vốn ban đầu (VD: $10,000)
+* 🎯 Mục tiêu lợi nhuận (VD: +5%)
+* ⏱️ Thời gian (VD: 60 ngày)
+* 🎚️ Mức độ rủi ro (Conservative/Moderate/Aggressive)
+* 🛡️ Giới hạn (max drawdown, VaR, per-asset cap)
+Quy trình:
+1. Nhận diện chế độ thị trường (bull/bear/chop/high-vol)
+2. Chọn chiến lược phù hợp với chế độ:
+   * Bull → Momentum strategy
+   * Chop → Mean reversion
+   * Bear → Defensive (tăng stablecoin)
+3. Phân bổ tài sản với ràng buộc:
+   * Tổng = 100%
+   * Mỗi coin ≤ 20%
+   * Stablecoin ≥ 10% (đệm an toàn)
+4. Đặt stop-loss:
+   * BTC/ETH: trailing stop 2%
+   * Altcoin rủi ro cao: trailing stop 3%
+5. Tần suất cân bằng lại:
+   * Hàng ngày nếu volatility cao
+   * Hàng tuần nếu ổn định
+Circuit breaker:
+* ❌ Thoát ra USDC khi:
+   * Portfolio drawdown ≥ 3%
+   * Chế độ thị trường chuyển sang "bear-high-vol"
+* ✋ Cần phê duyệt thủ công để tiếp tục
+________________
+
+
+5️⃣ LUẬT THỰC THI LỆNH (Execution Rules)
+Cách đặt lệnh:
+* 📊 TWAP (Time-Weighted Average Price) - chia đều trong 60 phút
+* 📊 VWAP (Volume-Weighted) - theo khối lượng
+* 🔀 Smart routing - chọn sàn có giá tốt nhất
+Bỏ qua lệnh nếu:
+* ❌ Spread > 0.25%
+* ❌ Độ sâu sổ lệnh < ngưỡng
+* ❌ Volatility quá cao
+* ❌ Đang trong timeout của sự kiện
+Xử lý lệnh:
+* ✅ Cho phép filled một phần
+* ⏱️ Timeout 5 phút cho mỗi lệnh
+* 🔪 Chia nhỏ lệnh lớn để giảm tác động giá
+________________
+
+
+6️⃣ LUẬT KIỂM TRA TRƯỚC GIAO DỊCH (Pre-trade Checks)
+Phải pass HẾT các check này:
+* ✅ KYC đã xác minh chưa?
+* ✅ AML sạch chưa?
+* ✅ User ở quốc gia được phép trade không?
+* ✅ Sàn có hợp pháp với user không?
+* ✅ Coin có trong whitelist không?
+* ✅ Coin KHÔNG có trong blacklist chứ?
+* ✅ User có quyền dùng leverage không? (nếu lệnh có leverage)
+* ✅ Vượt per-asset cap không?
+* ✅ Vượt max VaR không?
+* ✅ Vượt max drawdown không?
+❌ Nếu fail bất kỳ check nào → REJECT lệnh ngay
+________________
+
+
+7️⃣ LUẬT GIÁM SÁT SAU GIAO DỊCH (Post-trade Surveillance)
+Theo dõi liên tục:
+* 🔍 PnL bất thường → cảnh báo
+* 🔍 Wash trading (tự mua tự bán) → flag
+* 🔍 Tập trung quá nhiều vào 1 coin → cảnh báo
+* 🔍 Slippage thực tế vs dự kiến → đánh giá chất lượng execution
+________________
+
+
+8️⃣ LUẬT AUDIT TRAIL (Ghi Log)
+Phải log tất cả (immutable - không xóa được):
+1. 📸 Snapshot dữ liệu tại thời điểm quyết định
+2. 🤖 Output của model (xác suất, confidence)
+3. 💭 Lý do quyết định (tại sao mua/bán)
+4. 📝 Chi tiết lệnh (giá, khối lượng, thời gian)
+5. ✅ Kết quả fills (filled bao nhiêu, giá bao nhiêu)
+6. 💰 PnL sau trade
+7. 🔔 Thông báo đã gửi
+Mục đích:
+* ⚖️ Audit khi có tranh chấp
+* 🔬 Phân tích cải thiện hệ thống
+* 📊 Báo cáo cho regulator nếu cần
+________________
+
+
+9️⃣ LUẬT BẢO VỆ NGƯỜI DÙNG
+Phải hiển thị rõ ràng:
+* ⚠️ "Không đảm bảo lợi nhuận"
+* ⚠️ "Kết quả là xác suất, không chắc chắn"
+* ⚠️ "Có thể mất tiền"
+* ⚠️ "Không phải lời khuyên tài chính"
+Pathway tracker (Theo dõi tiến trình):
+* 📊 Hàng ngày tính xác suất đạt mục tiêu
+* 📊 "On-track" hay "Behind"?
+* 📊 Nếu Behind → đề xuất điều chỉnh
+* ⚠️ Nếu điều chỉnh TĂNG rủi ro → phải user phê duyệt
+________________
+
+
+🎯 TÓM TẮT NGẮN GỌN
+Loại Luật
+	Giá Trị Chính
+	Per-asset cap
+	Max 20%
+	Max Drawdown
+	3%
+	Max Daily VaR
+	2%
+	Max Slippage
+	0.25%
+	Min Stablecoin buffer
+	10-15%
+	Strong Buy threshold
+	p_up > 62%, confidence > 60%
+	Stop-loss BTC/ETH
+	Trailing 2%
+	Stop-loss Altcoin
+	Trailing 3%
+	Rebalance frequency
+	Daily hoặc Weekly
+	Circuit breaker
+	Drawdown = 3% → Exit to USDC

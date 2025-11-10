@@ -5,4 +5,5 @@ export * from './signalApi';
 export * from './goalApi';
 export * from './exchangeApi';
 export * from './tradeApi';
+export * from './recommendationApi';
 

@@ -95,7 +95,7 @@ export default function SignalsPage() {
             </Select>
           </div>
 
-          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)}>
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "cards" | "table")}>
             <TabsList>
               <TabsTrigger value="cards">Cards</TabsTrigger>
               <TabsTrigger value="table">Table</TabsTrigger>

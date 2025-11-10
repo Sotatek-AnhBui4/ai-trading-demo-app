@@ -26,12 +26,11 @@ export function SignalCard({ signal, showDetails = false }: SignalCardProps) {
   };
 
   const getSignalIcon = (label: Signal["label"]) => {
-    if (label.includes("Buy")) return TrendingUp;
-    if (label.includes("Sell")) return TrendingDown;
-    return Minus;
+    const iconProps = { className: "mr-1 h-3 w-3" };
+    if (label.includes("Buy")) return <TrendingUp {...iconProps} />;
+    if (label.includes("Sell")) return <TrendingDown {...iconProps} />;
+    return <Minus {...iconProps} />;
   };
-
-  const SignalIcon = getSignalIcon(signal.label);
 
   return (
     <Card>
@@ -39,7 +38,7 @@ export function SignalCard({ signal, showDetails = false }: SignalCardProps) {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">{signal.asset}</CardTitle>
           <Badge className={cn(getSignalColor(signal.label))}>
-            <SignalIcon className="mr-1 h-3 w-3" />
+            {getSignalIcon(signal.label)}
             {signal.label}
           </Badge>
         </div>

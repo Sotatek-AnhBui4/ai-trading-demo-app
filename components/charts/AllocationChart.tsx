@@ -21,6 +21,12 @@ export function AllocationChart({ allocations }: AllocationChartProps) {
     value: allocation.weight,
   }));
 
+  const renderLabel = (props: Record<string, unknown>) => {
+    const name = props.name as string;
+    const value = props.value as number;
+    return `${name}: ${Number(value).toFixed(1)}%`;
+  };
+
   return (
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
@@ -29,7 +35,7 @@ export function AllocationChart({ allocations }: AllocationChartProps) {
           cx="50%"
           cy="50%"
           labelLine={false}
-          label={({ name, value }) => `${name}: ${value.toFixed(1)}%`}
+          label={renderLabel}
           outerRadius={80}
           fill="#8884d8"
           dataKey="value"
